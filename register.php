@@ -44,25 +44,23 @@
 		{
 			$fnameErr = "Please enter your first name.";
 		}
-		else{$fname = $_POST['fname'];} //If first name was entered
-		
+		else
+		{
+			$fname = $_POST['fname'];
+		} 		
 		
 		if (empty($_POST['lname']))
 		{
 			$lnameErr = "Please enter your last name.";
 		}
-		else{$lname = $_POST['lname'];} //If lastname was entered
-		
+		else{$lname = $_POST['lname'];} 		
 		
 		
 		if (empty($_POST['age']))
 		{
 			$ageErr = "Please enter your age.";
 		}
-		else if (filter_var(($age = $_POST['age']), FILTER_VALIDATE_INT, 
-					array('options' => array('min_range' => 16, 
-					'max_range' => 90))) === TRUE)
-
+		else if ((($_POST['age']) < 16) || (($_POST['age']) > 90) || (!is_numeric($_POST['age'])))
 		{
 			$ageErr = "You must be between 16 and 90 years of age.";
 		}
@@ -71,11 +69,12 @@
 			$age = $_POST['age'];
 		}
 
+		
 		if (empty($_POST['email']))
 		{
 			$emailErr = "Please enter your email address.";
 		}
-		else if (filter_var(($email = $_POST['email']), FILTER_VALIDATE_EMAIL)) 
+		else if (filter_var(($_POST['email']), FILTER_VALIDATE_EMAIL)) 
 		{
     			$email = $_POST['email'];
 		}
@@ -90,12 +89,14 @@
 		{
 			$passErr = "Please enter a password.";
 		}
-		else if (strlen($pass) > 5 // at least 6 chars
-				&& (preg_match('[A-Z]',$pass) || preg_match('[a-z]',$pass))
-				&& preg_match('[0-9]',$pass)) // at least one digit
-			{ 			
-				$pass = $_POST['pass']; //If password was entered
-			}
+		else if 
+			(
+				strlen($_POST[ 'pass' ]) > 5
+				&& preg_match('/[0-9].*[A-Za-z]|[A-Za-z].*[0-9]/', $_POST['pass'])		 
+			) 			
+				{ 			
+					$pass = $_POST['pass']; 
+				}
 		else 
 		{
 			$passErr = "Your password must be at least 6 characters long with at least 1 number and 1 letter.";
@@ -107,11 +108,47 @@
 		{
 			$pass1Err = "Please re-type your password.";
 		}
-		else{$pass1 = $_POST['pass1'];} //If re-type password was entered
+		else if (
+				($_POST['pass'] === $_POST['pass1'])
+				&& (preg_match('/[0-9].*[A-Za-z]|[A-Za-z].*[0-9]/', $_POST['pass1']))
+			 )
+		{
+			$pass1 = $_POST['pass1'];
+		}
 		
+		if (	$fname == $_POST['fname'] 
+			&& $lname == $_POST['lname']
+			&& $age == $_POST['age']
+			&& $email == $_POST['email']
+			&& $pass == $_POST['pass']
+			&& $pass1 == $_POST['pass1']
+		   ) 
+		{
+			$address = $_POST['address'];
+			$city = $_POST['city'];
+			$state = $_POST['state'];
+			$postalcode = $_POST['postalcode'];
+			$country = $_POST['country'];
+		
+			$userOutput = "\n\nFirst Name: \t"	.$fname.
+					"\nLast Name: \t"	.$lname.
+					"\nAge: \t\t"		.$age.
+					"\nAddress: \t"	.$address.
+					"\nCity: \t\t"	.$city.
+					"\nState: \t"		.$state.
+					"\nPostal Code: \t"	.$postalcode.
+					"\nCountry: \t"	.$country.
+					"\nEmail: \t"		.$email.
+					"\nPassword: \t"	.$pass;
+
+			$fpUsers = fopen ("users.txt", "a");
+			fwrite($fpUsers, $userOutput);
+			fclose($fpUsers);
+		}
 	
 	}	
 ?>
+
 		<div id="form">
 
 		<form id="register" name="register" method="POST" enctype="multipart/form-data" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
@@ -198,7 +235,7 @@
 	
 	
 	<div id="footer0">
-		<a href="sitemap.php">Site Map</a> | <a href="privacy.php">Privacy</a>  Copyright © Peter Issa 2012
+		<a href="sitemap.php">Site Map</a> | <a href="privacy.php">Privacy</a>  Copyright ï¿½ Peter Issa 2012
 	</div>
 	
 	<div id="footer1">
